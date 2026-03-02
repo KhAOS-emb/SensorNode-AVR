@@ -1,0 +1,120 @@
+# Pipeline
+name: SensorNode-AVR CI
+
+on:
+  push:                       
+    branches: [main, develop]
+  pull_request:                
+    branches: [main, develop]
+
+jobs:
+
+  # ─────────────────────────────────────────────────────
+  # JOB 1: Unit Tests auf dem PC
+  # ─────────────────────────────────────────────────────
+  unit-tests:
+    name: "Unit Tests (GoogleTest)"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "📥 Code herunterladen"
+        uses: actions/checkout@v4
+
+      - name: "🔧 CMake Build-System installieren"
+        run: sudo apt-get install -y cmake
+
+      - name: "🏗️ Build vorbereiten"
+        run: cmake -B build_tests .
+
+      - name: "🔨 Tests kompilieren"
+        run: cmake --build build_tests
+
+      - name: "🧪 Tests ausführen"
+        run: |
+          cd build_tests
+          ./run_tests --gtest_output=xml:test-results.xml
+
+      - name: "📊 Test-Ergebnisse hochladen"
+        uses: actions/upload-artifact@v4
+        if: always()            # Auch bei Fehlschlag hochladen
+        with:
+          name: test-results
+          path: build_tests/test-results.xml
+
+  # ─────────────────────────────────────────────────────
+  # JOB 2: Cross-Compile für ATmega328P
+  # ─────────────────────────────────────────────────────
+  avr-build:
+    name: "AVR Cross-Compile"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "🔧 AVR Toolchain installieren"
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-avr avr-libc binutils-avr
+
+      - name: "🔨 Firmware kompilieren"
+        run: |
+          avr-g++ -std=c++17 -Wall -Wextra \
+            -mmcu=atmega328p \
+            -DF_CPU=16000000UL \
+            -Os \
+            -o firmware.elf \
+            src/main.cpp \
+            src/hal/*.cpp \
+            src/drivers/*.cpp \
+            src/app/*.cpp
+
+      - name: "📦 .hex Datei erzeugen"
+        run: avr-objcopy -O ihex firmware.elf firmware.hex
+
+      - name: "📊 Speicherverbrauch anzeigen"
+        run: avr-size --format=avr --mcu=atmega328p firmware.elf
+
+  # ─────────────────────────────────────────────────────
+  # JOB 3: Statische Code-Analyse
+  # ─────────────────────────────────────────────────────
+  static-analysis:
+    name: "Static Analysis (cppcheck)"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "🔧 cppcheck installieren"
+        run: sudo apt-get install -y cppcheck
+
+      - name: "🔍 Code analysieren"
+        run: |
+          cppcheck \
+            --enable=all \
+            --suppress=missingIncludeSystem \
+            --error-exitcode=1 \
+            --std=c++17 \
+            src/
+
+  # ─────────────────────────────────────────────────────
+  # JOB 4: Dokumentation generieren (nur auf main)
+  # ─────────────────────────────────────────────────────
+  docs:
+    name: "Doxygen Docs"
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'  # Nur auf main-Branch
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "🔧 Doxygen installieren"
+        run: sudo apt-get install -y doxygen graphviz
+
+      - name: "📚 Docs generieren"
+        run: doxygen docs/Doxyfile
+
+      - name: "🚀 Auf GitHub Pages deployen"
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/html
