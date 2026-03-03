@@ -1,0 +1,42 @@
+{
+  "tests": 6,
+  "name": "AllTests",
+  "testsuites": [
+    {
+      "name": "MovingAverage",
+      "tests": 6,
+      "testsuite": [
+        {
+          "name": "StartsWithZeroCount",
+          "file": "C:\\Users\\Khalid\\Documents\\PlatformIO\\Projects\\SensorNode-AVR\\tests\\unit\\test_moving_average.cpp",
+          "line": 7
+        },
+        {
+          "name": "AverageOfOneSample",
+          "file": "C:\\Users\\Khalid\\Documents\\PlatformIO\\Projects\\SensorNode-AVR\\tests\\unit\\test_moving_average.cpp",
+          "line": 12
+        },
+        {
+          "name": "AverageOfThreeSamples",
+          "file": "C:\\Users\\Khalid\\Documents\\PlatformIO\\Projects\\SensorNode-AVR\\tests\\unit\\test_moving_average.cpp",
+          "line": 18
+        },
+        {
+          "name": "OverwritesOldestWhenFull",
+          "file": "C:\\Users\\Khalid\\Documents\\PlatformIO\\Projects\\SensorNode-AVR\\tests\\unit\\test_moving_average.cpp",
+          "line": 27
+        },
+        {
+          "name": "ResetClearsAllValues",
+          "file": "C:\\Users\\Khalid\\Documents\\PlatformIO\\Projects\\SensorNode-AVR\\tests\\unit\\test_moving_average.cpp",
+          "line": 38
+        },
+        {
+          "name": "WorksWithFloatType",
+          "file": "C:\\Users\\Khalid\\Documents\\PlatformIO\\Projects\\SensorNode-AVR\\tests\\unit\\test_moving_average.cpp",
+          "line": 47
+        }
+      ]
+    }
+  ]
+}
