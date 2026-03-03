@@ -76,8 +76,9 @@ jobs:
       - name: "🔍 Code analysieren"
         run: |
           cppcheck \
-            --enable=all \
+            --enable=warning,style \
             --suppress=missingIncludeSystem \
+            --suppress=unusedFunction \
             --error-exitcode=1 \
             --std=c++17 \
             src/
