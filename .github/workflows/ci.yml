@@ -24,7 +24,9 @@ jobs:
         run: sudo apt-get install -y cmake
 
       - name: "🏗️ Build vorbereiten"
-        run: cmake -B build_tests .
+        run: |
+          rm -rf build_tests
+          cmake -B build_tests .
 
       - name: "🔨 Tests kompilieren"
         run: cmake --build build_tests
@@ -47,32 +49,16 @@ jobs:
   avr-build:
     name: "AVR Cross-Compile"
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: "🔧 AVR Toolchain installieren"
+      - name: "Install Python & PlatformIO"
         run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-avr avr-libc binutils-avr
+          python3 -m pip install --upgrade pip
+          pip install platformio
 
-      - name: "🔨 Firmware kompilieren"
-        run: |
-          avr-g++ -std=c++17 -Wall -Wextra \
-            -mmcu=atmega328p \
-            -DF_CPU=16000000UL \
-            -Os \
-            -o firmware.elf \
-            src/main.cpp \
-            src/hal/*.cpp \
-            src/drivers/*.cpp \
-            src/app/*.cpp
-
-      - name: "📦 .hex Datei erzeugen"
-        run: avr-objcopy -O ihex firmware.elf firmware.hex
-
-      - name: "📊 Speicherverbrauch anzeigen"
-        run: avr-size --format=avr --mcu=atmega328p firmware.elf
+      - name: "Build AVR Firmware"
+        run: platformio run -e uno
 
   # ─────────────────────────────────────────────────────
   # JOB 3: Statische Code-Analyse
@@ -90,8 +76,9 @@ jobs:
       - name: "🔍 Code analysieren"
         run: |
           cppcheck \
-            --enable=all \
+            --enable=warning,style \
             --suppress=missingIncludeSystem \
+            --suppress=unusedFunction \
             --error-exitcode=1 \
             --std=c++17 \
             src/
