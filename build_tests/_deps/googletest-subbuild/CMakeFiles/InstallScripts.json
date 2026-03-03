@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Users/Khalid/Documents/PlatformIO/Projects/SensorNode-AVR/build_tests/_deps/googletest-subbuild/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
