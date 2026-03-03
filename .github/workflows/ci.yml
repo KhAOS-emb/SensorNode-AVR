@@ -49,15 +49,12 @@ jobs:
   avr-build:
     name: "AVR Cross-Compile"
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
       - name: "Install Arduino CLI"
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
-          echo "$HOME/bin" >> $GITHUB_PATH
-          
+        uses: arduino/setup-arduino-cli@v1
+
       - name: "Install Arduino AVR Core"
         run: |
           arduino-cli core update-index
