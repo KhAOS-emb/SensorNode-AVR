@@ -53,6 +53,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: "Install Arduino CLI"
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+          echo "$HOME/bin" >> $GITHUB_PATH
+
+      - name: "Install Arduino AVR Core"
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr
+
+      - name: "Build Firmware"
+        run: arduino-cli compile --fqbn arduino:avr:uno .
+
       - name: "🔧 AVR Toolchain installieren"
         run: |
           sudo apt-get update
