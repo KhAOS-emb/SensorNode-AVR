@@ -53,9 +53,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Set up Arduino CLI"
-        uses: arduino/setup-arduino-cli@v1
-
+      - name: "Install Arduino CLI"
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+          echo "$HOME/bin" >> $GITHUB_PATH
+          export PATH="$HOME/bin:$PATH"
+          
       - name: "Install Arduino AVR Core"
         run: |
           arduino-cli core update-index
