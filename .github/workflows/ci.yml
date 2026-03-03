@@ -52,16 +52,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Install Arduino CLI"
-        uses: arduino/setup-arduino-cli@v1
-
-      - name: "Install Arduino AVR Core"
+      - name: "Install Python & PlatformIO"
         run: |
-          arduino-cli core update-index
-          arduino-cli core install arduino:avr
+          python3 -m pip install --upgrade pip
+          pip install platformio
 
-      - name: "Build Firmware"
-        run: arduino-cli compile --fqbn arduino:avr:uno .
+      - name: "Build AVR Firmware"
+        run: platformio run -e uno
 
   # ─────────────────────────────────────────────────────
   # JOB 3: Statische Code-Analyse
