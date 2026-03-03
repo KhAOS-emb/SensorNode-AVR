@@ -53,10 +53,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Install Arduino CLI"
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
-          echo "$HOME/bin" >> $GITHUB_PATH
+      - name: "Set up Arduino CLI"
+        uses: arduino/setup-arduino-cli@v1
 
       - name: "Install Arduino AVR Core"
         run: |
@@ -65,26 +63,6 @@ jobs:
 
       - name: "Build Firmware"
         run: arduino-cli compile --fqbn arduino:avr:uno .
-
-      - name: "🔧 AVR Toolchain installieren"
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-avr avr-libc binutils-avr
-
-      - name: "🔨 Firmware kompilieren"
-        run: |
-          avr-g++ -std=c++17 -Wall -Wextra \
-            -mmcu=atmega328p \
-            -DF_CPU=16000000UL \
-            -Os \
-            -o firmware.elf \
-            src/main.cpp
-
-      - name: "📦 .hex Datei erzeugen"
-        run: avr-objcopy -O ihex firmware.elf firmware.hex
-
-      - name: "📊 Speicherverbrauch anzeigen"
-        run: avr-size --format=avr --mcu=atmega328p firmware.elf
 
   # ─────────────────────────────────────────────────────
   # JOB 3: Statische Code-Analyse
