@@ -65,10 +65,7 @@ jobs:
             -DF_CPU=16000000UL \
             -Os \
             -o firmware.elf \
-            src/main.cpp \
-            src/hal/*.cpp \
-            src/drivers/*.cpp \
-            src/app/*.cpp
+            src/main.cpp
 
       - name: "📦 .hex Datei erzeugen"
         run: avr-objcopy -O ihex firmware.elf firmware.hex
