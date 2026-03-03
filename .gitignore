@@ -4,5 +4,6 @@
 *.elf
 *.hex
 *.map
+build_tests/
 build/
 cmake-build-*/
