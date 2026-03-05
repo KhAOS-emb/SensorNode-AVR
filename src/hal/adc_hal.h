@@ -1,6 +1,6 @@
 #pragma once
 #include <avr/io.h>
-#include <cstdint>
+#include <stdint.h>
 
 /**
  * @brief Hardware Abstraction Layer für den ADC (Analog-Digital-Wandler)

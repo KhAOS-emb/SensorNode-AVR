@@ -1,8 +1,8 @@
 #pragma once
+#include <Arduino.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <cstdint>
-#include <string_view>
+#include <stdint.h>
 
 /**
  * @brief UART HAL mit Interrupt-getriebenem Empfang und Sende-Puffer
@@ -28,13 +28,13 @@ public:
     static void sendChar(char c);
 
     /** @brief Sendet einen String */
-    static void sendString(std::string_view str);
+    static void sendString(const char* str);
 
     /** @brief Sendet Integer als Dezimalzahl */
     static void sendInt(int32_t value);
 
     /** @brief Sendet Zahl + Zeilenumbruch */
-    static void sendLine(std::string_view str);
+    static void sendLine(const char* str);
 
     /** @brief Prüft ob Zeichen im Empfangspuffer verfügbar */
     static bool dataAvailable();
@@ -44,10 +44,4 @@ public:
 
     /** @brief ISR-Handler — wird vom USART_RX_vect Interrupt aufgerufen */
     static void rxInterruptHandler();
-
-private:
-    // Ringpuffer für Empfang
-    static volatile uint8_t rxBuffer_[RX_BUFFER_SIZE];
-    static volatile uint8_t rxHead_;   // Schreib-Index (ISR schreibt hier)
-    static volatile uint8_t rxTail_;   // Lese-Index (Hauptprogramm liest hier)
 };

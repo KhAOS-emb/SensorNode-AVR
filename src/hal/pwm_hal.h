@@ -1,6 +1,6 @@
 #pragma once
 #include <avr/io.h>
-#include <cstdint>
+#include <stdint.h>
 
 /**
  * @brief PWM HAL für Timer1 (16-Bit) im CTC Mode

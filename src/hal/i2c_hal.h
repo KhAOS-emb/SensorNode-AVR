@@ -1,7 +1,7 @@
 #pragma once
 #include <avr/io.h>
 #include <util/twi.h>
-#include <cstdint>
+#include <stdint.h>
 
 /**
  * @brief Hardware Abstraction Layer für I²C (TWI) Master-Kommunikation
