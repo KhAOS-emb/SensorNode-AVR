@@ -13,8 +13,8 @@
  */
 class GPIO_HAL {
 public:
-    enum class Direction { INPUT, OUTPUT };
-    enum class Pull { NONE, PULLUP };
+    enum class Direction { PIN_INPUT, PIN_OUTPUT };
+    enum class Pull { PULL_NONE, PULL_UP };
 
     /**
      * @brief Setzt die Richtung eines Pins (Eingang oder Ausgang)
@@ -25,7 +25,7 @@ public:
     static void setDirection(volatile uint8_t& ddr,
                              uint8_t pin,
                              Direction dir) {
-        if (dir == Direction::OUTPUT) {
+        if (dir == Direction::PIN_OUTPUT) {
             ddr |= (1 << pin);   // Bit setzen → Ausgang
         } else {
             ddr &= ~(1 << pin);  // Bit löschen → Eingang
@@ -39,7 +39,7 @@ public:
     static void setPullUp(volatile uint8_t& port,
                           uint8_t pin,
                           Pull pull) {
-        if (pull == Pull::PULLUP) {
+        if (pull == Pull::PULL_UP) {
             port |= (1 << pin);
         } else {
             port &= ~(1 << pin);

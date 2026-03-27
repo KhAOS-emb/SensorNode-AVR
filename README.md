@@ -15,3 +15,4 @@ ATmega328P sensor firmware with professional C++ architecture.
 - I2C, UART, GPIO, ADC, PWM drivers
 - Unit-tested logic (GoogleTest)
 - CI/CD via GitHub Actions
+
