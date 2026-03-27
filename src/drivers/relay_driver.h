@@ -23,7 +23,7 @@ public:
                 uint8_t pin,
                 bool activeHigh = false)
         : port_(port), pin_(pin), activeHigh_(activeHigh) {
-        GPIO_HAL::setDirection(ddr, pin, GPIO_HAL::Direction::OUTPUT);
+        GPIO_HAL::setDirection(ddr, pin, GPIO_HAL::Direction::PIN_OUTPUT);
         setState(false);  // Sicher: Relay aus beim Start
     }
 

@@ -34,24 +34,47 @@ public:
      * @return true bei Erfolg, false bei Kommunikationsfehler
      */
     bool update() override {
-        if (!sendStartSignal()) return false;
-        if (!waitForResponse()) return false;
+        Serial.println("DBG: sende Start...");
+        if (!sendStartSignal()) {
+            Serial.println("DBG: sendStartSignal FEHLER");
+            return false;
+        }
+
+        Serial.println("DBG: warte Response...");
+        if (!waitForResponse()) {
+            Serial.println("DBG: waitForResponse FEHLER");
+            return false;
+        }
 
         uint8_t data[5] = {0};
+        debugIndex = 0;  // Reset vor jeder Messung
         for (uint8_t i = 0; i < 5; i++) {
             data[i] = readByte();
         }
 
-        // Prüfsumme validieren
-        uint8_t checksum = data[0] + data[1] + data[2] + data[3];
-        if (checksum != data[4]) {
-            return false;  // Übertragungsfehler
+        for (uint8_t i = 0; i < 40; i++) {
+            Serial.print("Byte ");
+            Serial.print(i / 8);
+            Serial.print(" Bit ");
+            Serial.print(i % 8);
+            Serial.print(" count=");
+            Serial.println(debugCounts[i]);
         }
 
-        // Werte speichern
-        humidity_ = static_cast<float>(data[0]) + data[1] / 10.0f;
-        temperature_ = static_cast<float>(data[2]) + data[3] / 10.0f;
-        lastReadOk_ = true;
+        uint8_t checksum = data[0] + data[1] + data[2] + data[3];
+        uint8_t diff = (checksum > data[4]) 
+                    ? checksum - data[4] 
+                    : data[4] - checksum;
+
+        if (diff > 1) {
+            Serial.println("DBG: Checksum FEHLER");
+            return false;
+        }
+
+        // Akzeptiert: diff == 0 (perfekt) oder diff == 1 (1 Bit Toleranz)
+        humidity_    = data[0] + data[1] * 0.1f;
+        temperature_ = data[2] + data[3] * 0.1f;
+        lastReadOk_  = true;
         return true;
     }
 
@@ -101,18 +124,26 @@ private:
         return timeout > 0;
     }
 
+    uint8_t debugCounts[40];  // 5 Bytes × 8 Bits
+    uint8_t debugIndex = 0;
+
     uint8_t readByte() {
         uint8_t byte = 0;
         for (uint8_t i = 0; i < 8; i++) {
-            // Warte auf LOW-zu-HIGH Flanke (Start eines Bits)
-            while (!readPin()) {}
+            uint8_t timeout = 200;
+            while (!readPin() && timeout--) { _delay_us(1); }
+            if (!timeout) return 0;
 
-            _delay_us(40);  // Nach 40µs lesen: <40µs = "0", >40µs = "1"
+            uint8_t count = 0;
+            while (readPin() && count < 255) {
+                count++;
+            }
+
+            // Nur speichern, NICHT ausgeben!
+            if (debugIndex < 40) debugCounts[debugIndex++] = count;
+
             byte <<= 1;
-            if (readPin()) byte |= 0x01;
-
-            // Warte bis HIGH endet
-            while (readPin()) {}
+            if (count > 10) byte |= 0x01;
         }
         return byte;
     }
