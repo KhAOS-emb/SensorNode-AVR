@@ -23,6 +23,26 @@ private:
     int updateCalls_{0};
 };
 
+class MockHumiditySensor : public IHumiditySensor {
+public:
+    float getHumidity() override { return fakeHumidity_; }
+    void  setHumidity(float h)   { fakeHumidity_ = h; }
+private:
+    float fakeHumidity_{50.0f};
+};
+
+class MockMotionSensor : public IMotionSensor {
+public:
+    bool isMotionDetected() override {
+        bool val = fakeMotion_;
+        fakeMotion_ = false;
+        return val;
+    }
+    void triggerMotion() { fakeMotion_ = true; }
+private:
+    bool fakeMotion_{false};
+};
+
 class MockRelay : public ISwitch {
 public:
     void setState(bool on) override { state_ = on; callCount_++; }

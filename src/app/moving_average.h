@@ -1,7 +1,6 @@
 #pragma once
-#include <array>
-#include <cstdint>
-#include <numeric>
+#include <stdint.h>
+#include <stddef.h>
 
 /**
  * @brief Gleitender Mittelwert-Filter
@@ -38,10 +37,11 @@ public:
      */
     float getAverage() const {
         if (count_ == 0) return 0.0f;
-        T sum = std::accumulate(buffer_.begin(),
-                                buffer_.begin() + count_,
-                                static_cast<T>(0));
-        return static_cast<float>(sum) / count_;
+        T sum = 0;
+        for (size_t i = 0; i < count_; i++) {
+            sum += buffer_[i];
+        }
+        return static_cast<float>(sum) / static_cast<float>(count_);
     }
 
     /** @brief Anzahl der bisher hinzugefügten Samples (max N) */
@@ -49,13 +49,13 @@ public:
 
     /** @brief Setzt den Filter zurück */
     void reset() {
-        buffer_.fill(0);
+        for (size_t i = 0; i < N; i++) buffer_[i] = 0;
         index_ = 0;
         count_ = 0;
     }
 
 private:
-    std::array<T, N> buffer_{};   // {} → alle Werte auf 0 initialisiert
+    T      buffer_[N]{};
     size_t index_{0};
     size_t count_{0};
 };
