@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "app/alarm_manager.h"
-#include "mock_sensor.h"
+#include "tests/mocks/mock_sensor.h"
 
 class AlarmManagerTest : public ::testing::Test {
 protected:
@@ -8,12 +8,7 @@ protected:
         manager = std::make_unique<AlarmManager>(
             &tempSensor, &humSensor, &motionSensor,
             &relay, &buzzer,
-            AlarmManager::Config{
-                .tempHighThreshold  = 30.0f,
-                .tempLowThreshold   = 5.0f,
-                .humidHighThreshold = 80.0f,
-                .confirmMs          = 2000
-            }
+            AlarmManager::Config(30.0f, 5.0f, 80.0f, 2000)
         );
     }
 

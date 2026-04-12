@@ -1,7 +1,11 @@
 #pragma once
 #include "../drivers/interfaces.h"
 #include "moving_average.h"
-#include <stdint.h>
+#ifdef __AVR__
+    #include <stdint.h>
+#else
+    #include <cstdint>
+#endif
 
 /**
  * @brief Verwaltet Alarm-Zustände basierend auf Sensor-Schwellwerten
