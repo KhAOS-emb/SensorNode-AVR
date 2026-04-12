@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "app/alarm_manager.h"
-#include "tests/mocks/mock_sensor.h"
+#include "mock_sensor.h"
 
 class AlarmManagerTest : public ::testing::Test {
 protected:
