@@ -102,7 +102,7 @@ private:
     uint8_t buffer_[PAGES * WIDTH]{};  // Frame-Buffer: 8 Pages × 128 Pixel
 
     void sendCommand(uint8_t cmd) {
-        uint8_t packet[2] = {0x00, cmd};  // 0x00 = Command Control Byte
+        const uint8_t packet[2] = {0x00, cmd};  // 0x00 = Command Control Byte
         I2C_HAL::writeBuffer(I2C_ADDRESS, packet, 2);
     }
 

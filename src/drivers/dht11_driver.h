@@ -35,10 +35,8 @@ public:
      */
     bool update() override {
         Serial.println("DBG: sende Start...");
-        if (!sendStartSignal()) {
-            Serial.println("DBG: sendStartSignal FEHLER");
-            return false;
-        }
+        sendStartSignal();
+        if (!waitForResponse()) return false;
 
         Serial.println("DBG: warte Response...");
         if (!waitForResponse()) {
@@ -47,18 +45,8 @@ public:
         }
 
         uint8_t data[5] = {0};
-        debugIndex = 0;  // Reset vor jeder Messung
         for (uint8_t i = 0; i < 5; i++) {
             data[i] = readByte();
-        }
-
-        for (uint8_t i = 0; i < 40; i++) {
-            Serial.print("Byte ");
-            Serial.print(i / 8);
-            Serial.print(" Bit ");
-            Serial.print(i % 8);
-            Serial.print(" count=");
-            Serial.println(debugCounts[i]);
         }
 
         uint8_t checksum = data[0] + data[1] + data[2] + data[3];
@@ -97,14 +85,13 @@ private:
     void setPinLow()    { *port_ &= ~(1 << bit_); }
     bool readPin()      { return (*pin_ & (1 << bit_)) != 0; }
 
-    bool sendStartSignal() {
+    void sendStartSignal() {
         setPinOutput();
         setPinLow();
         _delay_ms(18);     // Mind. 18ms LOW
         setPinHigh();
         _delay_us(30);     // 20-40µs HIGH
         setPinInput();
-        return true;
     }
 
     bool waitForResponse() {
@@ -124,9 +111,6 @@ private:
         return timeout > 0;
     }
 
-    uint8_t debugCounts[40];  // 5 Bytes × 8 Bits
-    uint8_t debugIndex = 0;
-
     uint8_t readByte() {
         uint8_t byte = 0;
         for (uint8_t i = 0; i < 8; i++) {
@@ -138,9 +122,6 @@ private:
             while (readPin() && count < 255) {
                 count++;
             }
-
-            // Nur speichern, NICHT ausgeben!
-            if (debugIndex < 40) debugCounts[debugIndex++] = count;
 
             byte <<= 1;
             if (count > 10) byte |= 0x01;
