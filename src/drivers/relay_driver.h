@@ -22,9 +22,11 @@ public:
                 volatile uint8_t& ddr,
                 uint8_t pin,
                 bool activeHigh = false)
-        : port_(port), pin_(pin), activeHigh_(activeHigh) {
+        : port_(port), pin_(pin), activeHigh_(activeHigh), state_(false) {
         GPIO_HAL::setDirection(ddr, pin, GPIO_HAL::Direction::PIN_OUTPUT);
-        setState(false);  // Sicher: Relay aus beim Start
+        // Direkt schreiben statt setState() aufrufen:
+        bool pinLevel = activeHigh_ ? false : true;  // Relay aus beim Start
+        GPIO_HAL::write(port_, pin_, pinLevel);
     }
 
     void setState(bool on) override {

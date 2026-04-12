@@ -41,6 +41,11 @@ public:
             0xAF         // Display ON
         };
 
+        I2C_HAL::Result result = I2C_HAL::writeBuffer(I2C_ADDRESS, initCmds, 1);
+        if (result != I2C_HAL::Result::OK) {
+            return false;  // OLED nicht gefunden
+        }
+        
         for (uint8_t cmd : initCmds) {
             sendCommand(cmd);
         }
